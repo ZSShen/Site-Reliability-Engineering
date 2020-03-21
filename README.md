@@ -58,7 +58,7 @@ Try to quantify the syndrome or confirm issues with the customers before deep di
 
 
 ## System Performance, Enterprise, and the Cloud
-### Chapter 3 Operating System Exercise
+### Chapter 3 Operating System
 1. Answer the following questions about OS terminology.
     + What is the difference between a process, a thread, and a task?
     + What is a context switch?
@@ -81,30 +81,70 @@ Try to quantify the syndrome or confirm issues with the customers before deep di
     + What is counter?
         + Kernels maintain various statistics, called counters, for counting events. They are usually implemented as unsigned integers that are incremented when events occur. Many kinds of counter monitors are supported in Linux. These tools typically read statistics from the `/proc` file system.
         + System-Wide:
-            + vmstat: Virtual and physical memory statistics, system-wide.
-            + mpstat: Per-CPU usage.
-            + iostat: Per-disk I/O usage, reported from the **block device** interface.
-            + netstat: Network interface statistics, TCP/IP stack statistics, and some per-connection statistics.
-            + sar: Various statistics; can also archive them for historical reporting.
+            + **vmstat**: Virtual and physical memory statistics, system-wide.
+            + **mpstat**: Per-CPU usage.
+            + **iostat**: Per-disk I/O usage, reported from the **block device** interface.
+            + **netstat**: Network interface statistics, TCP/IP stack statistics, and some per-connection statistics.
+            + **sar**: Various statistics; can also archive them for historical reporting.
         + Per-Process:
-            + ps: Process status, shows various process statistics, including memory and CPU usage.
-            + top: Shows top processes, sorted by one of the statistics such as CPU usage.
-            + pmap: Lists process memory segments with usage statistics.
+            + **ps**: Process status, shows various process statistics, including memory and CPU usage.
+            + **top**: Shows top processes, sorted by one of the statistics such as CPU usage.
+            + **pmap**: Lists process memory segments with usage statistics.
 
     + What is tracing?
         + Tracing collects **per-event data** for analysis. Tracing frameworks are not typically enabled by default, since tracing incurs CPU overhead to capture the data and can require significant storage to save it. These overheads can slow the target of tracing and need to be accounted for when interpreting measured times.
         + System-Wide:
-            + tcpdump: network packet tracing (uses libpcap).
-            + perf: Linux Performance Events, tracing static and dynamic probes.
+            + **tcpdump**: network packet tracing (uses libpcap).
+            + **perf**: Linux Performance Events, tracing static and dynamic probes.
         + Per-Process:
-            + strace: system call tracing for Linux-based systems.
+            + **strace**: system call tracing for Linux-based systems.
 
     + What is the difference between static and dynamic tracing?
 
     + What is profling?
         + Profiling characterizes the target by collecting **a set of samples or snapshots** of its behavior. CPU usage is a common example, where samples are taken of the program counter or stack trace to characterize the code paths that are consuming CPU cycles. These samples are usually collected at a fixed rate, such as 100 or 1,000 Hz (cycles per second) across all CPUs.
         + System-Wide and Per-Process:
-            + perf: A Linux performance toolkit, which includes profiling subcommands.
+            + **perf**: A Linux performance toolkit, which includes profiling subcommands.
+
+### Chapter 5 Applications
+1. Answer the following questions about terminology:
+    + What is a cache?
+        + Operating systems use caches to improve file system read performance and memory allocation performance; applications often use caches for a similar reason.
+
+    + What is a buffer?
+        + To improve write performance, data may be coalesced in a buffer before being sent to the next level. This increases the I/O size and efficiency of the operation.
+
+    + What is a ring buffer?
+        + A type of fixed buffer that can be used for continuous transfer between components, which act upon the buffer asynchronously.
+
+    + What is a spin lock?
+        + Spin locks allow the holder to operate, while others requiring the lock spin on-CPU in a tight loop, checking for the lock to be released.
+
+    + What is an adaptive mutex lock?
+
+    + What is the difference between concurrency and parallelism?
+        + Concurrency is when two or more tasks can start, run, and complete in overlapping time periods. It doesn't necessarily mean they'll ever both be running at the same instant. For example, multitasking on a single-core machine. Parallelism is when tasks literally run at the same time, e.g., on a multicore processor.
+
+    + What is CPU affinity?
+        + The ability in Linux to bind one or more processes to one or more processors. This can improve the memory locality of the application, reducing the cycles for memory I/O and improving overall application performance.
+
+2. Answer the following conceptual questions:
+    + What are the general pros and cons of using a large I/O size?
+        + Initialization tax is paid for small and large I/O alike. For efficiency, the more data transferred by each I/O, the better. For example, it’s usually much more efficient to transfer 128 Kbytes as a single I/O than as 128 x 1 Kbyte I/O.
+    + Explain the role of garbage collection and how it can affect performance.
+
+### Chapter 7 Memory
+1. Answer the following questions about memory terminology:
+    + What is a page of memory?
+        + A unit of memory, as used by the OS and CPUs. Historically it is either 4 or 8 Kbytes. Modern processors have multiple page size support for larger sizes.
+    + What is resident memory?
+        + Memory that currently resides in main memory.
+    + What is virtual memory?
+        + An abstraction of main memory that is (almost) infinite and noncontended.
+    + Using Unix terminology, what is the difference between paging and swapping?
+    + Using Linux terminology, what is the difference between paging and swapping?
+
+
 
 ## Operating System Knowledge
 ### Process Control Block
@@ -128,6 +168,23 @@ The primary function of swap space is to substitute disk space for RAM memory wh
 ### Trashing
 Thrashing can occur when total virtual memory, both RAM and swap space, become nearly full. The system spends so much time paging blocks of memory between swap space and RAM and back that little time is left for real work. The typical symptoms of this are obvious: The system becomes slow or completely unresponsive, and the hard drive activity light is on almost constantly.
 
+### RAID
+RAID stands for **Redundant Array of Independent Disks**. It's idea is to  spread data over multiple drives in parallel to get higher throughput while using parity for robustness.
++ **Raid 0**: Stripe data across drives for improved throughput.
+    + No extra redundancy, elevated risk.
++ **Raid 1**: Mirroring, parallel data to multiple devices for robustness.
+    + No extra throughput.
++ **Raid 2**: Use Hamming codes for parity.
+    + Requires log2 parity bits.
+    + Really expensive.
++ **Raid 3**: Bitwise parity on parity disk.
+    + Requires only one parity disk for N storage disks.
+    + Bitwise parity is slow, dedicated parity disk is bottleneck.
++ **Raid 4**: Similar to Raid 3, but blockwise parity improves performance.
++ **Raid 5**: Rotating parity block among disks relieves bottleneck.
++ **Raid 6**: Raid5 with dual parity.
+    + Supports up to 2 HDD failures.
+    + Slow rebuild.
 
 ## Bash Knowledge
 ## Special Variable
